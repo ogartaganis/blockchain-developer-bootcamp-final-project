@@ -20,4 +20,4 @@ As soon as one has their vaccination QR code, they will enter it in the Blockcha
 Similar to the app in Fig.1, the reverse process is going to be used to verify the validity of the QR code, in accordance with the ID that the person is going to be holding.
 
 <img src="https://user-images.githubusercontent.com/5063813/135172098-a38dd1cc-3f02-4da2-b71f-c07255b2da70.png" width=500/>
-_Fig.1: The sample tool found via https://ethereum-101.netlify.app, from which the inspiration came_
+Fig.1: The sample tool found via https://ethereum-101.netlify.app, from which the inspiration came

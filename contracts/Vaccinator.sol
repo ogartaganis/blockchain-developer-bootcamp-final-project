@@ -1,26 +1,33 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract Vaccinator {
-
-    // The single source of truth is the vaccine serial number. It's unique and has to be contained in 
-    // the Health Organization's database. Somehow.
-    bytes[] legitVaccineSerialNumbers =  [bytes("asdf"),bytes("fdas"),bytes("asdfasdf")];
-
     struct VaccinatedPerson {
         bytes32 name;
-        uint vaccineSerialNumber;
+        bytes vaccineSerialNumber;
     }
 
+    // There are a few addresses that are allowed to verify a QR code
     mapping(address => bool) verifiers;
     mapping(address => VaccinatedPerson) vaccinatedPeople;
+    // The single source of truth is the vaccine serial number. It's unique and has to be contained in 
+    // the Health Organization's database. Somehow.
+    mapping(bytes => bool) legitVaccineSerialNumbers;
 
+    // No need to overcharge
     modifier onlyRegisterOnce(address _personAddress) {
         require(vaccinatedPeople[_personAddress].name.length == 0);
         _;
     }
 
+    // Our super-users
     modifier onlyVerifiers(address _verifierAddress) {
         require(verifiers[_verifierAddress]);
+        _;
+    }
+
+    // Our legit vaccine serial numbers
+    modifier onlyLegitVaccineSerialNumbers(bytes memory serialNumber) {
+        require(legitVaccineSerialNumbers[serialNumber]);
         _;
     }
 
@@ -32,7 +39,7 @@ contract Vaccinator {
     }
 
     // Register Vaccinated Person
-    function registerVaccinatedPerson(address _vaccinated, bytes32 name, uint vaccineSerialNumber) public payable onlyRegisterOnce(_vaccinated) returns (string memory qrCode){
+    function registerVaccinatedPerson(address _vaccinated, bytes32 name, bytes memory vaccineSerialNumber) public payable onlyRegisterOnce(_vaccinated) onlyLegitVaccineSerialNumbers(vaccineSerialNumber) returns (string memory qrCode){
         // QRCode string is produced and returned
         qrCode = "12343124";
 

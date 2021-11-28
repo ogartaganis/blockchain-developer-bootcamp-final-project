@@ -1,0 +1,43 @@
+body {
+    background-color: #E6F7FF;
+  }
+
+  /* sky palette */
+  /* 
+  #5CB3FF
+  #45B9FF
+  #82CAFA
+  #ADDFFF
+  #E6F7FF */
+  
+  h1 {
+    /* color: #186FBB ; */
+    /* text-align: center; */
+  }
+  
+  p {
+    font-family: verdana;
+    font-size: 20px;
+  }
+
+  #content {
+    margin: 30px;
+  }
+
+  .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .mm-box {
+    position: fixed;
+    border-radius: 8px;
+    top: 0;
+    right: 0;
+    background: #45B9FF;
+    margin: 30px;
+    padding: 20px;
+    color: #fff;
+    font-size: 1.4em;
+  }

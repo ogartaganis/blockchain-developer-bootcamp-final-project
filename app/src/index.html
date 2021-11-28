@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="css/style.css" type="text/css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V for Vaccine</title>
+</head>
+<body>
+    <div id="content">
+        <h1>Welcome to Vaccinator 3000</h1>
+
+        <div class="mm-box">
+            <!-- 1. detect Metamask is/is not installed -->
+            <img class="center" src="https://cdn.iconscout.com/icon/free/png-512/metamask-2728406-2261817.png" width="40"><div id="mm-detected">Detecting Metamask..</div>
+
+            <!-- 2. allow the user to get access to Metamask3. -->
+            <button id="mm-connect">Connect to MetaMask</button>
+
+            <!--MetaMask should only be provided once it's necessary-->
+            <div id="mm-current-account"></div>
+
+        </div>
+    </div>
+
+    <script src="js/dapp.js"></script>
+</body>
+</html>

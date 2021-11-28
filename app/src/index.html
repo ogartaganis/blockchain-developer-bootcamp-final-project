@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>V for Vaccine</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>"
+    <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
 </head>
 <body>
     <div id="content">
@@ -35,11 +37,14 @@
             <div id="Register" class="tabcontent">
                 <h3>Register</h3>
                 <p>London is the capital city of England.</p>
+                <div id="qrcode"></div>
             </div>
             
             <div id="Verify" class="tabcontent">
                 <h3>Verify</h3>
                 <p>Paris is the capital of France.</p>
+                <div id="qr-reader" style="width: 600px"></div>
+                <button id="qr-start-scanning">Start Scanning</button>
             </div>
         </div>
     </div>

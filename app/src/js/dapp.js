@@ -46,3 +46,54 @@ function openRole(evt, role) {
     document.getElementById(role).style.display = "block";
     evt.currentTarget.className += " active";
   } 
+
+  // ************* Scanner ************* //
+  var qrc = new QRCode(document.getElementById("qrcode"), "http://site.com/");
+
+  function onScanSuccess(decodedText, decodedResult) {
+    console.log(`Code scanned = ${decodedText}`, decodedResult);
+    html5QrcodeScanner.stop();
+    
+    QRCode.stop;
+}
+// var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
+// html5QrcodeScanner.render(onScanSuccess);
+
+// PRO mode
+const html5QrCode = new Html5Qrcode("qr-reader");
+// This method will trigger user permissions
+var cameraId = "";
+Html5Qrcode.getCameras().then(devices => {
+    /**
+     * devices would be an array of objects of type:
+     * { id: "id", label: "label" }
+     */
+    if (devices && devices.length) {
+      cameraId = devices[0].id;
+      console.log("CAMERA ID: "+cameraId);
+    }
+  }).catch(err => {
+    // handle err
+  });
+const startScanning = document.getElementById('qr-start-scanning');
+
+// 2. allow the user to get access to Metamask3.
+startScanning.onclick = async() => {
+    html5QrCode.start(
+        cameraId, 
+        {
+          fps: 10,    // Optional, frame per seconds for qr code scanning
+          qrbox: { width: 250, height: 250 }  // Optional, if you want bounded box UI
+        },
+        (decodedText, decodedResult) => {
+          console.log("DECODED TEXT : "+decodedText);
+          html5QrCode.stop();
+          alert("DECODED TEXT : "+decodedText);
+        },
+        (errorMessage) => {
+          // parse error, ignore it.
+        })
+      .catch((err) => {
+        // Start failed, handle it.
+      });
+}

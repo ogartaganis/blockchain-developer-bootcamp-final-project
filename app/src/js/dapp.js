@@ -26,7 +26,7 @@ mmEnable.onclick = async() => {
     mmCurrentAccount.innerHTML = "Here's your current account: <br />"+ethereum.selectedAddress
 }
 
-function openCity(evt, cityName) {
+function openRole(evt, role) {
     // Declare all variables
     var i, tabcontent, tablinks;
   
@@ -43,6 +43,6 @@ function openCity(evt, cityName) {
     }
   
     // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(cityName).style.display = "block";
+    document.getElementById(role).style.display = "block";
     evt.currentTarget.className += " active";
   } 

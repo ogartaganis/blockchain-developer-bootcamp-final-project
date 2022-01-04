@@ -1,7 +1,5 @@
 pragma solidity >=0.6.0 <0.9.0;
 
-import "github.com/Arachnid/solidity-stringutils/strings.sol";
-
 contract Vaccinator {
     struct VaccinatedPerson {
         bytes32 name;
@@ -64,11 +62,10 @@ contract Vaccinator {
         verifiers[newVerifier] = true;
     }
 
-    /// @param _vaccinated A new vaccinated person
     /// @param name Their name
     /// @param vaccineSerialNumber A legit vaccine serial number
     // Register Vaccinated Person
-    function registerVaccinatedPerson(address _vaccinated, string memory name, bytes memory vaccineSerialNumber) public payable onlyLegitVaccineSerialNumbers(vaccineSerialNumber) returns (string memory qrCode){
+    function registerVaccinatedPerson(string memory name, bytes memory vaccineSerialNumber) public payable onlyLegitVaccineSerialNumbers(vaccineSerialNumber) returns (string memory qrCode){
         // QRCode string is produced and returned
         qrCode = produceQRCodeText(vaccineSerialNumber);
 
@@ -78,9 +75,9 @@ contract Vaccinator {
 
     /// @param qrCode The incoming QR code containing all the necessary info to approve
     // Somehow we need to verify that this person is registered
-    function verifyRegisteredPerson(string memory qrCode) public view onlyVerifiers(msg.sender) returns (bytes32 name){
+    function verifyRegisteredPerson(string memory qrCode) public view onlyVerifiers(msg.sender) returns (string memory name){
         // decode qrCode and produce the serialNumber!
-        val serialNumber = getSlice(0, 9, qrCode);
+        bytes memory serialNumber = getSlice(0, 9, qrCode);
 
         // Serial number should be legit
         name = vaccineSerialNumbersAndNamesMapping[serialNumber];
@@ -92,15 +89,15 @@ contract Vaccinator {
         qrCodeString = string(abi.encodePacked(serialNumber, "pasok"));
     }
 
-    function decodeQRCodeText(bytes memory qrCodeString) pure private returns(string memory name) {
-        name = string(abi.encodePacked(serialNumber, "pasok"));
-    }
+    // function decodeQRCodeText(bytes memory qrCodeString) pure private returns(string memory name) {
+    //     name = string(abi.encodePacked(serialNumber, "pasok"));
+    // }
 
-    function getSlice(uint256 begin, uint256 end, string memory text) pure private returns (string memory) {
+    function getSlice(uint256 begin, uint256 end, string memory text) pure private returns (bytes memory) {
         bytes memory a = new bytes(end-begin+1);
         for(uint i=0;i<=end-begin;i++){
             a[i] = bytes(text)[i+begin-1];
         }
-        return string(a);    
+        return a;    
     }
 }

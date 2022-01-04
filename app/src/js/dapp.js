@@ -1,9 +1,84 @@
 console.log("FORTWTHIKE")
 
+const ssABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "_verifiers",
+				"type": "address[]"
+			},
+			{
+				"internalType": "bytes[]",
+				"name": "_legitVaccineSerialNumbers",
+				"type": "bytes[]"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newVerifier",
+				"type": "address"
+			}
+		],
+		"name": "addVerifier",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "bytes",
+				"name": "vaccineSerialNumber",
+				"type": "bytes"
+			}
+		],
+		"name": "registerVaccinatedPerson",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "qrCode",
+				"type": "string"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "qrCode",
+				"type": "string"
+			}
+		],
+		"name": "verifyRegisteredPerson",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
+
 // 1. detect Metamask is/is not installed
 window.addEventListener('load', function() {
     if (typeof window.ethereum !== 'undefined'){
-        console.log('MetaMask detected!')
+        console.log('asdfff MetaMask detected!')
         // document refers to the html file
         let mmDetected = document.getElementById('mm-detected')
         mmDetected.innerHTML = "MetaMask Has Been Detected!"
@@ -17,7 +92,7 @@ const mmEnable = document.getElementById('mm-connect');
 
 // 2. allow the user to get access to Metamask3.
 mmEnable.onclick = async() => {
-    console.log("asdfff")
+    console.log("asdfff about to scan")
     await ethereum.request({ method: 'eth_requestAccounts'})
 
     const mmCurrentAccount = document.getElementById('mm-current-account');
@@ -47,14 +122,15 @@ function openRole(evt, role) {
     evt.currentTarget.className += " active";
   } 
 
-  // ************* Scanner ************* //
-  var qrc = new QRCode(document.getElementById("qrcode"), "http://site.com/");
+// *********************************** //
+// ************* Scanner ************* //
+var qrc = new QRCode(document.getElementById("qrcode"), "http://site.com/");
 
-  function onScanSuccess(decodedText, decodedResult) {
-    console.log(`Code scanned = ${decodedText}`, decodedResult);
-    html5QrcodeScanner.stop();
-    
-    QRCode.stop;
+function onScanSuccess(decodedText, decodedResult) {
+  console.log(`Code scanned = ${decodedText}`, decodedResult);
+  html5QrcodeScanner.stop();
+  
+  QRCode.stop;
 }
 // var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
 // html5QrcodeScanner.render(onScanSuccess);
@@ -64,20 +140,20 @@ const html5QrCode = new Html5Qrcode("qr-reader");
 // This method will trigger user permissions
 var cameraId = "";
 Html5Qrcode.getCameras().then(devices => {
-    /**
-     * devices would be an array of objects of type:
-     * { id: "id", label: "label" }
-     */
-    if (devices && devices.length) {
-      cameraId = devices[0].id;
-      console.log("CAMERA ID: "+cameraId);
-    }
-  }).catch(err => {
-    // handle err
-  });
+  /**
+   * devices would be an array of objects of type:
+   * { id: "id", label: "label" }
+   */
+  if (devices && devices.length) {
+    cameraId = devices[0].id;
+    console.log("CAMERA ID: "+cameraId);
+  }
+}).catch(err => {
+  // handle err
+});
 const startScanning = document.getElementById('qr-start-scanning');
 
-// 2. allow the user to get access to Metamask3.
+// SCAN!
 startScanning.onclick = async() => {
     html5QrCode.start(
         cameraId, 
@@ -96,4 +172,14 @@ startScanning.onclick = async() => {
       .catch((err) => {
         // Start failed, handle it.
       });
+}
+// *********** /Scanner ************** //
+// *********************************** //
+
+const ssSubmit = document.getElementById('ss-input-button');
+
+ssSubmit.onclick = async () => {
+  const ssName = document.getElementById('ss-input-name').value;
+  const ssSerialNumber = document.getElementById('ss-input-serial-number').value;
+  console.log(ssName + " and serial number: " + ssSerialNumber)
 }

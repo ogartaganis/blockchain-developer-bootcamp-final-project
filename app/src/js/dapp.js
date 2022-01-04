@@ -2,20 +2,35 @@ console.log("FORTWTHIKE")
 
 const ssABI = [
 	{
-		"inputs": [
-			{
-				"internalType": "address[]",
-				"name": "_verifiers",
-				"type": "address[]"
-			},
-			{
-				"internalType": "bytes[]",
-				"name": "_legitVaccineSerialNumbers",
-				"type": "bytes[]"
-			}
-		],
+		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "something",
+				"type": "string"
+			}
+		],
+		"name": "LogDebug",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "qrCode",
+				"type": "string"
+			}
+		],
+		"name": "LogSuccess",
+		"type": "event"
 	},
 	{
 		"inputs": [
@@ -38,9 +53,9 @@ const ssABI = [
 				"type": "string"
 			},
 			{
-				"internalType": "bytes",
+				"internalType": "string",
 				"name": "vaccineSerialNumber",
-				"type": "bytes"
+				"type": "string"
 			}
 		],
 		"name": "registerVaccinatedPerson",
@@ -74,6 +89,7 @@ const ssABI = [
 		"type": "function"
 	}
 ]
+const ssAddress = '0xf0673491661CAcf94Cf54954D4A68F3Bf11Ff594';
 
 // 1. detect Metamask is/is not installed
 window.addEventListener('load', function() {
@@ -181,5 +197,17 @@ const ssSubmit = document.getElementById('ss-input-button');
 ssSubmit.onclick = async () => {
   const ssName = document.getElementById('ss-input-name').value;
   const ssSerialNumber = document.getElementById('ss-input-serial-number').value;
-  console.log(ssName + " and serial number: " + ssSerialNumber)
+  console.log(ssName + " and serial number: " + ssSerialNumber);
+
+  var web3 = new Web3(window.ethereum);
+  const vaccinatorContract = new web3.eth.Contract(ssABI, ssAddress);
+
+  vaccinatorContract.events.LogSuccess({})
+  	.on('data', async function(event){
+	  console.log(event.returnValues);
+	  // Do something here
+  	})
+  	.on('error', console.error);
+
+  await vaccinatorContract.methods.registerVaccinatedPerson(ssName, ssSerialNumber).send({from: ethereum.selectedAddress});
 }

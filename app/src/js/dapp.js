@@ -16,7 +16,7 @@ const ssABI = [
 				"type": "string"
 			}
 		],
-		"name": "LogDebug",
+		"name": "LogFailure",
 		"type": "event"
 	},
 	{
@@ -73,7 +73,7 @@ const ssABI = [
 		"inputs": [
 			{
 				"internalType": "string",
-				"name": "qrCode",
+				"name": "serialNumber",
 				"type": "string"
 			}
 		],
@@ -89,7 +89,7 @@ const ssABI = [
 		"type": "function"
 	}
 ]
-const ssAddress = '0xf0673491661CAcf94Cf54954D4A68F3Bf11Ff594';
+const ssAddress = '0x82d2Dc900DCeB0562900d310e38A06c284F02120';
 
 // 1. detect Metamask is/is not installed
 window.addEventListener('load', function() {
@@ -140,8 +140,6 @@ function openRole(evt, role) {
 
 // *********************************** //
 // ************* Scanner ************* //
-var qrc = new QRCode(document.getElementById("qrcode"), "http://site.com/");
-
 function onScanSuccess(decodedText, decodedResult) {
   console.log(`Code scanned = ${decodedText}`, decodedResult);
   html5QrcodeScanner.stop();
@@ -177,10 +175,16 @@ startScanning.onclick = async() => {
           fps: 10,    // Optional, frame per seconds for qr code scanning
           qrbox: { width: 250, height: 250 }  // Optional, if you want bounded box UI
         },
-        (decodedText, decodedResult) => {
+        async(decodedText, decodedResult) => {
           console.log("DECODED TEXT : "+decodedText);
           html5QrCode.stop();
-          alert("DECODED TEXT : "+decodedText);
+		  const resultName = await vaccinatorContract.methods.verifyRegisteredPerson(decodedText.slice(0, 2)).call({from: ethereum.selectedAddress});
+		  console.log("resultName: " + resultName)
+		  if (resultName == "-") {
+			alert("FAIL!")
+		  } else {
+			alert("Legit name: " + resultName)
+		  }
         },
         (errorMessage) => {
           // parse error, ignore it.
@@ -192,22 +196,34 @@ startScanning.onclick = async() => {
 // *********** /Scanner ************** //
 // *********************************** //
 
+var web3 = new Web3(window.ethereum);
+const vaccinatorContract = new web3.eth.Contract(ssABI, ssAddress);
+// https://betterprogramming.pub/ethereum-dapps-how-to-listen-for-events-c4fa1a67cf81
+vaccinatorContract.events.LogSuccess({})
+	.on('data', async function(event){
+		console.log(event.returnValues);
+		qrCode = event.returnValues[0];
+		console.log("SUCCESS! WE MANAGED TO LOG")
+		console.log("qrCode: " + qrCode)
+		var qrc = new QRCode(document.getElementById("qrcode"), qrCode);
+
+		alert("SUCCESS! Please take a screenshot of your QR and present it whenever needed.")
+	})
+	.on('error', console.error);
+
+vaccinatorContract.events.LogFailure({})
+	.on('data', async function(event){
+		console.log(event.returnValues);
+		console.log("FAIL!")
+		alert("FAIL! Your serial number was not legit or already used.")
+	})
+	.on('error', console.error);
+
 const ssSubmit = document.getElementById('ss-input-button');
 
 ssSubmit.onclick = async () => {
-  const ssName = document.getElementById('ss-input-name').value;
-  const ssSerialNumber = document.getElementById('ss-input-serial-number').value;
-  console.log(ssName + " and serial number: " + ssSerialNumber);
-
-  var web3 = new Web3(window.ethereum);
-  const vaccinatorContract = new web3.eth.Contract(ssABI, ssAddress);
-
-  vaccinatorContract.events.LogSuccess({})
-  	.on('data', async function(event){
-	  console.log(event.returnValues);
-	  // Do something here
-  	})
-  	.on('error', console.error);
-
-  await vaccinatorContract.methods.registerVaccinatedPerson(ssName, ssSerialNumber).send({from: ethereum.selectedAddress});
+	const ssName = document.getElementById('ss-input-name').value;
+	const ssSerialNumber = document.getElementById('ss-input-serial-number').value;
+	console.log(ssName + " and serial number: " + ssSerialNumber);
+	await vaccinatorContract.methods.registerVaccinatedPerson(ssName, ssSerialNumber).send({from: ethereum.selectedAddress});
 }

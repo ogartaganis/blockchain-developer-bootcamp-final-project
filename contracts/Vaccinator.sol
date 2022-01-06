@@ -13,12 +13,12 @@ contract Vaccinator {
     // the Health Organization's database. Somehow.
     mapping(string => string) vaccineSerialNumbersAndNamesMapping;
 
-    event LogDebug(string something);
+    event LogFailure(string something);
     event LogSuccess(string qrCode);
 
     // constructor(address[] memory _verifiers, string[] memory _legitVaccineSerialNumbers){
     constructor(){
-        address[1] memory _verifiers = [0xdeACE1bdAAbED5A7D1481e0EfB60418A50633CB5];
+        address[2] memory _verifiers = [0xdeACE1bdAAbED5A7D1481e0EfB60418A50633CB5, 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4];
         string[5] memory _legitVaccineSerialNumbers = ["11", "12", "13", "14", "15"];
 
         // All the initial addresses should be verifiers
@@ -77,7 +77,7 @@ contract Vaccinator {
         *  b) be so far unclaimed          
         */
         if (keccak256(abi.encode(vaccineSerialNumbersAndNamesMapping[vaccineSerialNumber])) != keccak256(abi.encode('-'))) {
-            emit LogDebug("not legit serial number!");
+            emit LogFailure("not legit serial number!");
             // revert();
         } else {
             // QRCode string is produced and returned
@@ -89,16 +89,14 @@ contract Vaccinator {
         }
     }
 
-    /// @param qrCode The incoming QR code containing all the necessary info to approve
+    /// @param serialNumber The incoming serialNumber to check against our db
     // Somehow we need to verify that this person is registered
-    function verifyRegisteredPerson(string memory qrCode) public view onlyVerifiers(msg.sender) returns (string memory name){
-        // decode qrCode and produce the serialNumber!
-        string memory serialNumber = getSlice(0, 9, qrCode);
+    function verifyRegisteredPerson(string memory serialNumber) public view onlyVerifiers(msg.sender) returns (string memory name){
+        // // decode qrCode and produce the serialNumber!
+        // string memory serialNumber = getSlice(0, 1, qrCode);
 
-        // Serial number should be legit
+        // Let's return the name that corresponds
         name = vaccineSerialNumbersAndNamesMapping[serialNumber];
-        
-        // Should Emit the result
     }
 
     function produceQRCodeText(string memory serialNumber) pure private returns(string memory qrCodeString) {
@@ -109,13 +107,13 @@ contract Vaccinator {
     //     name = string(abi.encodePacked(serialNumber, "pasok"));
     // }
 
-    function getSlice(uint256 begin, uint256 end, string memory text) pure private returns (string memory) {
-        bytes memory a = new bytes(end-begin+1);
-        for(uint i=0;i<=end-begin;i++){
-            a[i] = bytes(text)[i+begin-1];
-        }
-        return string(a);    
-    }
+    // function getSlice(uint256 begin, uint256 end, string memory text) payable public returns (string memory) {
+    //     bytes memory a = new bytes(end-begin+1);
+    //     for(uint i=0;i<=end-begin;i++){
+    //         a[i] = bytes(text)[i+begin-1];
+    //     }
+    //     return string(a);    
+    // }
 
     function string_tobytes(string memory s) pure private returns (bytes memory){
         bytes memory b3 = bytes(s);

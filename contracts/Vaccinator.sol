@@ -1,74 +1,57 @@
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.6.0 <0.9.0;
 
-contract Vaccinator {
-    struct VaccinatedPerson {
-        bytes32 name;
-        bytes vaccineSerialNumber;
-    }
+import "./Ownable.sol";
 
-    // There are a few addresses that are allowed to verify a QR code
+/// @title Validator for vaccination certficate
+/// @author Orestis Gartaganis
+/// @notice You can use this contract for only the most basic vaccination registration 
+///         and verification. No encryption has been used and lots of them need improvment 
+contract Vaccinator is Ownable{
+
+    /// There are a few addresses that are allowed to verify a QR code
     mapping(address => bool) verifiers;
-    // mapping(address => VaccinatedPerson) vaccinatedPeople;
-    // The single source of truth is the vaccine serial number. It's unique and has to be contained in 
-    // the Health Organization's database. Somehow.
+
+    /// The single source of truth is the vaccine serial number. It's unique and has to be contained in 
+    /// the Health Organization's database. Somehow.
     mapping(string => string) vaccineSerialNumbersAndNamesMapping;
 
-    event LogFailure(string something);
+    event LogFailure(string why);
     event LogSuccess(string qrCode);
 
-    // constructor(address[] memory _verifiers, string[] memory _legitVaccineSerialNumbers){
+    /// constructor(address[] memory _verifiers, string[] memory _legitVaccineSerialNumbers){
     constructor(){
         address[2] memory _verifiers = [0xdeACE1bdAAbED5A7D1481e0EfB60418A50633CB5, 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4];
         string[5] memory _legitVaccineSerialNumbers = ["11", "12", "13", "14", "15"];
 
-        // All the initial addresses should be verifiers
+        /// All the initial addresses should be verifiers
         for(uint i = 0; i < _verifiers.length; i++) {
             verifiers[_verifiers[i]] = true;
         }
 
-        // All the initial vaccination serial numbers are legit and are initialized to "-" name
+        /// All the initial vaccination serial numbers are legit and are initialized to "-" name
         for(uint i = 0; i < _legitVaccineSerialNumbers.length; i++) {
             vaccineSerialNumbersAndNamesMapping[_legitVaccineSerialNumbers[i]] = "-";
         }
     }
 
-    // ********** OWNABLE ************ //
-    address private owner = msg.sender; 
-
-    modifier onlyOwner  {
-        require(msg.sender == owner);
-        _;
-    }
-    // /********* OWNABLE ***********/ //
-
-    // No need to overcharge; checking that the user is only registered once
-    // modifier onlyRegisterOnce(address _personAddress) {
-    //     require(vaccinatedPeople[_personAddress].name.length == 0);
-    //     _;
-    // }
-
-    // Our super-users; checking that only super users can verify
+    /// Our super-users; checking that only super users can verify
+    /// @param _verifierAddress the attempting verifier address
+    /// @dev this will block anyone even starting a transaction if they can't,
+    ///      saving them from getting charged
     modifier onlyVerifiers(address _verifierAddress) {
         require(verifiers[_verifierAddress]);
         _;
     }
 
-    
-    // modifier onlyLegitVaccineSerialNumbers(string memory serialNumber) {
-    //     // require(keccak256(abi.encode(vaccineSerialNumbersAndNamesMapping[serialNumber])) == keccak256("-"));
-    //     require(keccak256(abi.encode(vaccineSerialNumbersAndNamesMapping[serialNumber])) == keccak256(abi.encode('-')));
-    //     emit LogDebug("not legit serial number!");
-    //     _;
-    // }
-
-    // Let's think about it coz should the admin have to pay to register new verifiers?
+    /// @notice Let's think about it coz should the owner have to pay to register new verifiers?
     function addVerifier(address newVerifier) public onlyOwner payable {
         verifiers[newVerifier] = true;
     }
 
+    /// Register Vaccinated Person
     /// @param name Their name
     /// @param vaccineSerialNumber A legit vaccine serial number
-    // Register Vaccinated Person
     function registerVaccinatedPerson(string memory name, string memory vaccineSerialNumber) public payable returns (string memory qrCode){
         /**
         * Our legit vaccine serial numbers; checking that only these serial numbers are acceptable
@@ -78,34 +61,34 @@ contract Vaccinator {
         */
         if (keccak256(abi.encode(vaccineSerialNumbersAndNamesMapping[vaccineSerialNumber])) != keccak256(abi.encode('-'))) {
             emit LogFailure("not legit serial number!");
-            // revert();
         } else {
-            // QRCode string is produced and returned
+            /// QRCode string is produced and returned
             qrCode = produceQRCodeText(vaccineSerialNumber);
-            emit LogSuccess(qrCode);
 
-            // The object with the QRCode is stored as a struct
+            /// The inputted name is corresponded to the vaccineSerialNumber
             vaccineSerialNumbersAndNamesMapping[vaccineSerialNumber] = name;
+            emit LogSuccess(qrCode);
         }
     }
 
     /// @param serialNumber The incoming serialNumber to check against our db
-    // Somehow we need to verify that this person is registered
+    /// Somehow we need to verify that this person is registered
     function verifyRegisteredPerson(string memory serialNumber) public view onlyVerifiers(msg.sender) returns (string memory name){
-        // // decode qrCode and produce the serialNumber!
-        // string memory serialNumber = getSlice(0, 1, qrCode);
+        /// // decode qrCode and produce the serialNumber!
+        /// @dev this solution unfortunately charges us so if we want to have this 
+        ///      function "view", we cannot do complicated stuff here.
+        /// string memory serialNumber = getSlice(0, 1, qrCode);
 
-        // Let's return the name that corresponds
+        /// Let's return the name that corresponds and we check in the frontend whether it's a name or a gap
         name = vaccineSerialNumbersAndNamesMapping[serialNumber];
     }
 
+    /// @notice We should come up with a better strategy for encryption
+    ///         Currently we're adding a word here and then decrypting it in the frontend
+    ///         But we can do better in a real-world scenario
     function produceQRCodeText(string memory serialNumber) pure private returns(string memory qrCodeString) {
         qrCodeString = string(abi.encodePacked(serialNumber, "pasok"));
     }
-
-    // function decodeQRCodeText(bytes memory qrCodeString) pure private returns(string memory name) {
-    //     name = string(abi.encodePacked(serialNumber, "pasok"));
-    // }
 
     // function getSlice(uint256 begin, uint256 end, string memory text) payable public returns (string memory) {
     //     bytes memory a = new bytes(end-begin+1);

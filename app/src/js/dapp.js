@@ -146,8 +146,6 @@ function onScanSuccess(decodedText, decodedResult) {
   
   QRCode.stop;
 }
-// var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
-// html5QrcodeScanner.render(onScanSuccess);
 
 // PRO mode
 const html5QrCode = new Html5Qrcode("qr-reader");
@@ -180,10 +178,10 @@ startScanning.onclick = async() => {
           html5QrCode.stop();
 		  const resultName = await vaccinatorContract.methods.verifyRegisteredPerson(decodedText.slice(0, 2)).call({from: ethereum.selectedAddress});
 		  console.log("resultName: " + resultName)
-		  if (resultName == "-") {
-			alert("FAIL!")
+		  if (resultName == "-" || resultName == " "|| resultName == "") {
+			alert("FAIL! Not a legit QR code.")
 		  } else {
-			alert("Legit name: " + resultName)
+			alert("Legit QR code! Corresponding name: " + resultName)
 		  }
         },
         (errorMessage) => {

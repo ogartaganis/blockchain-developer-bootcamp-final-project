@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.6.0 <0.9.0;
+pragma solidity 0.8.11;
 
 import "./Ownable.sol";
 
@@ -19,10 +19,10 @@ contract Vaccinator is Ownable{
     event LogFailure(string why);
     event LogSuccess(string qrCode);
 
-    /// constructor(address[] memory _verifiers, string[] memory _legitVaccineSerialNumbers){
-    constructor(){
-        address[2] memory _verifiers = [0xdeACE1bdAAbED5A7D1481e0EfB60418A50633CB5, 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4];
-        string[5] memory _legitVaccineSerialNumbers = ["11", "12", "13", "14", "15"];
+    constructor(address[] memory _verifiers, string[] memory _legitVaccineSerialNumbers){
+    // constructor(){
+        // address[2] memory _verifiers = [0xdeACE1bdAAbED5A7D1481e0EfB60418A50633CB5, 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4];
+        // string[5] memory _legitVaccineSerialNumbers = ["11", "12", "13", "14", "15"];
 
         /// All the initial addresses should be verifiers
         for(uint i = 0; i < _verifiers.length; i++) {

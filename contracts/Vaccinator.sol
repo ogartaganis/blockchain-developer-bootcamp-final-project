@@ -10,18 +10,20 @@ import "./Ownable.sol";
 contract Vaccinator is Ownable{
 
     /// There are a few addresses that are allowed to verify a QR code
-    mapping(address => bool) verifiers;
+    mapping(address => bool) public verifiers;
 
     /// The single source of truth is the vaccine serial number. It's unique and has to be contained in 
     /// the Health Organization's database. Somehow.
     mapping(string => string) vaccineSerialNumbersAndNamesMapping;
 
-    event LogFailure(string why);
-    event LogSuccess(string qrCode);
+    event LogFailure(string message);
+    event LogSuccess(string message);
 
     constructor(address[] memory _verifiers, string[] memory _legitVaccineSerialNumbers){
+    // constructor(string[] memory _legitVaccineSerialNumbers){
     // constructor(){
         // address[2] memory _verifiers = [0xdeACE1bdAAbED5A7D1481e0EfB60418A50633CB5, 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4];
+        // address[] memory _verifiers;
         // string[5] memory _legitVaccineSerialNumbers = ["11", "12", "13", "14", "15"];
 
         /// All the initial addresses should be verifiers

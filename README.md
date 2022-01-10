@@ -37,3 +37,6 @@ For the purpose of verification, we're using the camera of the device to `scan` 
 - The frontend is in the `index.html` file and is backed by our `dapp.js`, holding all the logic for the connection of it with the contract. The contract is included in the top of the file as an ABI, along with its *ROPSTEN* contract address.
   
 - There's also a tiny `style.css` (insert gif with Peter Griffin playing with CSS).
+
+## Testing
+All tests are found in the `vaccinator.test.js` and there's one more helper file, the `exceptions.js`, which can help with catching errors (equiped for **reverts** in this test suite).

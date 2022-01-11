@@ -29,6 +29,8 @@ As a result, they're receiving a QR code with a prompt to save or take a screens
 
 < ___ IMAGE ___ >
 
+ALSO! The UI is informing us how many legit serial numbers are left. Covers the "read from the smart contract" part of the requirements.
+
 ### Verifying
 Similar to the app in Fig.1, the reverse process is going to be used to verify the validity of the QR code, bringing back the name of the person that has registered said serial number. The one verifying then can check the ID that the person is going to be holding.
 
@@ -56,3 +58,10 @@ function verifyRegisteredPerson(string memory serialNumber) public view onlyVeri
 
 ## Testing
 All tests are found in the `vaccinator.test.js` and there's one more helper file, the `exceptions.js`, which can help with catching errors (equiped for **reverts** in this test suite).
+
+## Deploying
+The address and network of the contract can be found in the `deployed_address.txt` file.
+
+There are no external dependencies, only internal, where you should also deploy `Ownable.sol`.
+
+You can run as a local node on port: 7545.

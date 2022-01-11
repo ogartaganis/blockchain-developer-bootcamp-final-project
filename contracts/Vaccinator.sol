@@ -9,6 +9,8 @@ import "./Ownable.sol";
 ///         and verification. No encryption has been used and lots of them need improvment 
 contract Vaccinator is Ownable{
 
+    string[] private legitVaccineSerialNumbers;
+
     /// There are a few addresses that are allowed to verify a QR code
     mapping(address => bool) public verifiers;
 
@@ -30,6 +32,8 @@ contract Vaccinator is Ownable{
         for(uint i = 0; i < _verifiers.length; i++) {
             verifiers[_verifiers[i]] = true;
         }
+
+        legitVaccineSerialNumbers = _legitVaccineSerialNumbers;
 
         /// All the initial vaccination serial numbers are legit and are initialized to "-" name
         for(uint i = 0; i < _legitVaccineSerialNumbers.length; i++) {
@@ -103,5 +107,14 @@ contract Vaccinator is Ownable{
     function string_tobytes(string memory s) pure private returns (bytes memory){
         bytes memory b3 = bytes(s);
         return b3;
+    }
+
+    function numberOfSerialsLeft() public view returns (uint count) {
+        count = 0;
+        for(uint i = 0; i < legitVaccineSerialNumbers.length; i++) {
+            if (keccak256(abi.encode(vaccineSerialNumbersAndNamesMapping[legitVaccineSerialNumbers[i]])) == keccak256(abi.encode('-'))){
+                count += 1;
+            }
+        }
     }
 }

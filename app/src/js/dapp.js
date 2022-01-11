@@ -2,7 +2,18 @@ console.log("FORTWTHIKE")
 
 const ssABI = [
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "_verifiers",
+				"type": "address[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_legitVaccineSerialNumbers",
+				"type": "string[]"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
@@ -12,7 +23,7 @@ const ssABI = [
 			{
 				"indexed": false,
 				"internalType": "string",
-				"name": "something",
+				"name": "message",
 				"type": "string"
 			}
 		],
@@ -25,7 +36,7 @@ const ssABI = [
 			{
 				"indexed": false,
 				"internalType": "string",
-				"name": "qrCode",
+				"name": "message",
 				"type": "string"
 			}
 		],
@@ -43,6 +54,32 @@ const ssABI = [
 		"name": "addVerifier",
 		"outputs": [],
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "numberOfSerialsLeft",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "count",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -72,6 +109,25 @@ const ssABI = [
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "verifiers",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "string",
 				"name": "serialNumber",
 				"type": "string"
@@ -89,7 +145,7 @@ const ssABI = [
 		"type": "function"
 	}
 ]
-const ssAddress = '0x82d2Dc900DCeB0562900d310e38A06c284F02120';
+const ssAddress = '0xbA1600FbfC300f5982650F64Cca2fFDB63DDE1af';
 
 // 1. detect Metamask is/is not installed
 window.addEventListener('load', function() {
@@ -115,6 +171,8 @@ mmEnable.onclick = async() => {
     mmEnable.style.visibility='hidden';
 
     mmCurrentAccount.innerHTML = "Here's your current account: <br />"+ethereum.selectedAddress
+
+	updateSerialNumbersLeft();
 }
 
 function openRole(evt, role) {
@@ -145,6 +203,12 @@ function onScanSuccess(decodedText, decodedResult) {
   html5QrcodeScanner.stop();
   
   QRCode.stop;
+}
+
+async function updateSerialNumbersLeft() {
+	const ssSerialNumbersLeft = document.getElementById("ss-serial-numbers-left")
+	const resultName = await vaccinatorContract.methods.numberOfSerialsLeft().call({from: ethereum.selectedAddress});
+	ssSerialNumbersLeft.innerHTML = "Legit serial numbers still left: " + resultName
 }
 
 // PRO mode
@@ -204,6 +268,7 @@ vaccinatorContract.events.LogSuccess({})
 		console.log("SUCCESS! WE MANAGED TO LOG")
 		console.log("qrCode: " + qrCode)
 		var qrc = new QRCode(document.getElementById("qrcode"), qrCode);
+		updateSerialNumbersLeft();
 
 		alert("SUCCESS! Please take a screenshot of your QR and present it whenever needed.")
 	})

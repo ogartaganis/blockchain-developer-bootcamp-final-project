@@ -4,6 +4,9 @@ Final project submission for the ConsenSys Academy Blockchain Developer Bootcamp
 Orestis Gartaganis
 0xdeACE1bdAAbED5A7D1481e0EfB60418A50633CB5
 ```
+
+Screencast: https://www.loom.com/share/4879977af16c4e058e02601eea70c488
+
 ## Project idea:
 
 `tl;dr`: Validator for vaccination certficate
@@ -64,3 +67,10 @@ The address and network of the contract can be found in the `deployed_address.tx
 There are no external dependencies, only internal, where you should also deploy `Ownable.sol`.
 
 You can run as a local node on port: 7545.
+
+## IMPORTANT
+Since the verifiers is a sensitive group of people, they're defined in the constructor but also through a function that is `ownerOnly`. So if any of you wants to use the verification, you have the option to contact the owner (me) to add you. Or trust the tests - trust the screencast.
+
+This is an MVP and as such it should be treated :)
+
+If you read till here, you rock 🤙

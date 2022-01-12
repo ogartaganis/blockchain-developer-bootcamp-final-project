@@ -1,1 +1,2 @@
-Ropsten Network
+Network: Ropsten Network
+Deployed address: 0x4cef6B0c07C4232091f347Fbe9724A3366e131d4

@@ -145,7 +145,7 @@ const ssABI = [
 		"type": "function"
 	}
 ]
-const ssAddress = '0xbA1600FbfC300f5982650F64Cca2fFDB63DDE1af';
+const ssAddress = '0x1361CdD9d053cb5cD0472c8E0D58AeA8e1d10312';
 
 // 1. detect Metamask is/is not installed
 window.addEventListener('load', function() {
@@ -229,8 +229,9 @@ Html5Qrcode.getCameras().then(devices => {
 });
 const startScanning = document.getElementById('qr-start-scanning');
 
-// SCAN!
+// VERIFY -> SCAN!
 startScanning.onclick = async() => {
+	startScanning.style.visibility='hidden';
     html5QrCode.start(
         cameraId, 
         {
@@ -241,6 +242,7 @@ startScanning.onclick = async() => {
           console.log("DECODED TEXT : "+decodedText);
           html5QrCode.stop();
 		  const resultName = await vaccinatorContract.methods.verifyRegisteredPerson(decodedText.slice(0, 2)).call({from: ethereum.selectedAddress});
+		  startScanning.style.visibility='visible';
 		  console.log("resultName: " + resultName)
 		  if (resultName == "-" || resultName == " "|| resultName == "") {
 			alert("FAIL! Not a legit QR code.")
@@ -260,33 +262,42 @@ startScanning.onclick = async() => {
 
 var web3 = new Web3(window.ethereum);
 const vaccinatorContract = new web3.eth.Contract(ssABI, ssAddress);
-// https://betterprogramming.pub/ethereum-dapps-how-to-listen-for-events-c4fa1a67cf81
-vaccinatorContract.events.LogSuccess({})
-	.on('data', async function(event){
-		console.log(event.returnValues);
-		qrCode = event.returnValues[0];
-		console.log("SUCCESS! WE MANAGED TO LOG")
-		console.log("qrCode: " + qrCode)
-		var qrc = new QRCode(document.getElementById("qrcode"), qrCode);
-		updateSerialNumbersLeft();
-
-		alert("SUCCESS! Please take a screenshot of your QR and present it whenever needed.")
-	})
-	.on('error', console.error);
-
-vaccinatorContract.events.LogFailure({})
-	.on('data', async function(event){
-		console.log(event.returnValues);
-		console.log("FAIL!")
-		alert("FAIL! Your serial number was not legit or already used.")
-	})
-	.on('error', console.error);
 
 const ssSubmit = document.getElementById('ss-input-button');
 
+// REGISTER -> INPUT
 ssSubmit.onclick = async () => {
 	const ssName = document.getElementById('ss-input-name').value;
 	const ssSerialNumber = document.getElementById('ss-input-serial-number').value;
 	console.log(ssName + " and serial number: " + ssSerialNumber);
+	document.getElementById("qrcode").innerHTML = "";
 	await vaccinatorContract.methods.registerVaccinatedPerson(ssName, ssSerialNumber).send({from: ethereum.selectedAddress});
+}
+
+subscribeToRegisterEvents();
+
+function subscribeToRegisterEvents() {
+	// https://betterprogramming.pub/ethereum-dapps-how-to-listen-for-events-c4fa1a67cf81
+	var successfulSubscription = vaccinatorContract.events.LogSuccess({})
+	successfulSubscription
+		.on('data', async function(event){
+			console.log(event.returnValues);
+			qrCode = event.returnValues[0];
+			console.log("SUCCESS! WE MANAGED TO LOG")
+			console.log("qrCode: " + qrCode)
+			var qrc = new QRCode(document.getElementById("qrcode"), qrCode);
+			updateSerialNumbersLeft();
+
+			alert("SUCCESS! Please take a screenshot of your QR and present it whenever needed.")
+		})
+		.on('error', console.error);
+
+	var unsuccessfulSubscription = vaccinatorContract.events.LogFailure({})
+	unsuccessfulSubscription
+		.on('data', async function(event){
+			console.log(event.returnValues);
+			console.log("FAIL!")
+			alert("FAIL! Your serial number was not legit or already used.")
+		})
+		.on('error', console.error);
 }

@@ -25,17 +25,14 @@ Registration is performed using the function:
 function registerVaccinatedPerson(string memory name, string memory vaccineSerialNumber) public payable returns (string memory qrCode){ .. }
 ```
 
-As a result, they're receiving a QR code with a prompt to save or take a screenshot of. `<dev> The QR Code is produced in the backend. The Contract just returns a string</dev>`
+As a result, they're receiving a QR code with a prompt to save or take a screenshot of. `<dev> The QR Code is produced in the frontend. The Contract just returns a string</dev>`
 
-< ___ IMAGE ___ >
+<img width="1309" alt="image" src="https://user-images.githubusercontent.com/5063813/149139996-5e162ec9-07ab-415f-a113-24e7a90591d0.png">
 
 ALSO! The UI is informing us how many legit serial numbers are left. Covers the "read from the smart contract" part of the requirements.
 
 ### Verifying
-Similar to the app in Fig.1, the reverse process is going to be used to verify the validity of the QR code, bringing back the name of the person that has registered said serial number. The one verifying then can check the ID that the person is going to be holding.
-
-<img src="https://user-images.githubusercontent.com/5063813/135172098-a38dd1cc-3f02-4da2-b71f-c07255b2da70.png" width=400/><br />
-Fig.1: The sample tool found via https://ethereum-101.netlify.app, from which the inspiration came
+The reverse process is going to be used to verify the validity of the QR code, bringing back the name of the person that has registered said serial number. The one verifying then can check the ID that the person is going to be holding.
 
 For the purpose of verification, we're using the camera of the device to `scan` the QR code that the user is showing to us. 
 
@@ -45,8 +42,10 @@ Verification is performed with the function:
 function verifyRegisteredPerson(string memory serialNumber) public view onlyVerifiers(msg.sender) returns (string memory name){..}
 ```
 
+<img width="1017" alt="image" src="https://user-images.githubusercontent.com/5063813/149141341-74e95c94-41e8-4395-955f-9b25015360c3.png">
 
-< ___ IMAGE ___ >
+<img width="991" alt="image" src="https://user-images.githubusercontent.com/5063813/149141183-942dcf64-f144-4eb6-9b10-a440be3efc32.png">
+
 
 
 ## Implementation

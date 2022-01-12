@@ -4,6 +4,9 @@ Final project submission for the ConsenSys Academy Blockchain Developer Bootcamp
 Orestis Gartaganis
 0xdeACE1bdAAbED5A7D1481e0EfB60418A50633CB5
 ```
+Contract Address (ROPSTEN): `deployed_address.txt`file
+
+Dapp frontend address: https://ogartaganis.github.io
 
 Screencast: https://www.loom.com/share/4879977af16c4e058e02601eea70c488
 
